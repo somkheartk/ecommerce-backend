@@ -1,14 +1,16 @@
 // Common utility functions for the backend
 
-export function buildResponse({ code, message, data = null, error = null }: {
+export function buildResponse({ code, message, data = null, error = null, meta = undefined }: {
   code: any;
   message: any;
   data?: any;
   error?: any;
+  meta?: any;
 }) {
   const res: Record<string, any> = { code, message };
   if (data !== null && data !== undefined) res.data = data;
   if (error !== null && error !== undefined) res.error = error;
+  if (meta !== undefined) res.meta = meta;
   return res;
 }
 

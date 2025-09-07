@@ -13,10 +13,22 @@ export class OrdersService {
     @InjectRepository(Order)
     private readonly orderRepo: MongoRepository<Order>,
   ) {}
-
   async create(data: Partial<Order>): Promise<IOrder> {
     try {
-      const order = this.orderRepo.create({ ...data, createdAt: new Date(), status: 'pending' });
+      // แปลง userId และ items จาก string เป็น ObjectId
+      const userId = data.userId ? new ObjectId(data.userId as any) : undefined;
+      const items = Array.isArray((data as any).productIds)
+        ? (data as any).productIds.map((id: string) => new ObjectId(id))
+        : Array.isArray((data as any).items)
+        ? (data as any).items.map((id: string) => new ObjectId(id))
+        : [];
+      const order = this.orderRepo.create({
+        ...data,
+        userId,
+        items,
+        createdAt: new Date(),
+        status: 'pending',
+      });
       const saved = await this.orderRepo.save(order);
       return this.toIOrder(saved);
     } catch (err) {
@@ -47,19 +59,35 @@ export class OrdersService {
     }
   }
 
-  async update(id: string, data: Partial<Order>): Promise<IOrder> {
-    try {
-      const orderEntity = await this.orderRepo.findOneBy({ _id: new ObjectId(id) });
-      if (!orderEntity) throw new NotFoundException('Order not found');
-      Object.assign(orderEntity, data);
-      const saved = await this.orderRepo.save(orderEntity);
-      return this.toIOrder(saved);
-    } catch (err) {
-      this.logger.error(`Error updating order ${id}: ${err.message}`);
-      if (err instanceof NotFoundException) throw err;
-      throw new InternalServerErrorException('Database error');
+  // ...removed duplicate update...
+  // ...removed duplicate update...
+    async update(id: string, data: Partial<Order>): Promise<IOrder> {
+      try {
+        const orderEntity = await this.orderRepo.findOneBy({ _id: new ObjectId(id) });
+        if (!orderEntity) throw new NotFoundException('Order not found');
+        // แปลง userId และ items จาก string เป็น ObjectId ถ้ามี
+        if (data.userId) {
+          orderEntity.userId = new ObjectId(data.userId as any);
+        }
+        if ((data as any).productIds) {
+          orderEntity.items = (data as any).productIds.map((id: string) => new ObjectId(id));
+        } else if ((data as any).items) {
+          orderEntity.items = (data as any).items.map((id: string) => new ObjectId(id));
+        }
+        if (typeof data.total === 'number') {
+          orderEntity.total = data.total;
+        }
+        if (data.status) {
+          orderEntity.status = data.status;
+        }
+        const saved = await this.orderRepo.save(orderEntity);
+        return this.toIOrder(saved);
+      } catch (err) {
+        this.logger.error(`Error updating order ${id}: ${err.message}`);
+        if (err instanceof NotFoundException) throw err;
+        throw new InternalServerErrorException('Database error');
+      }
     }
-  }
 
 
   async remove(id: string): Promise<void> {

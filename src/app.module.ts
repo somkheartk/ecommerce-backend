@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
+import { Product } from './entities/product.entity';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { OrdersModule } from './orders/orders.module';
@@ -21,7 +22,7 @@ import { AuthController } from './auth/auth.controller';
         type: 'mongodb',
         url: config.get<string>('MONGO_URI'),
         database: config.get<string>('MONGO_DB'),
-        entities: [__dirname + '/../entities/*.entity.{js,ts}'],
+        entities: [Product],
         synchronize: true,
       }),
     }),

@@ -1,25 +1,25 @@
 import { Entity, ObjectIdColumn, Column } from 'typeorm';
 import { ObjectId } from 'mongodb';
 
-@Entity()
+@Entity('products')
 export class Product {
   @ObjectIdColumn()
   _id: ObjectId;
 
   @Column()
-  name: string;
-
-  @Column('text')
-  description: string;
+  product_name: string;
 
   @Column('decimal')
   price: number;
 
+  @Column('text')
+  description: string;
+
   @Column('int')
-  stock: number;
+  stock_quantity: number;
 
   @Column({ nullable: true })
-  imageUrl: string;
+  sku: string;
 
   @Column()
   createdAt: Date;

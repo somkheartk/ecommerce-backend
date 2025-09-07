@@ -18,9 +18,9 @@ export class OrdersController {
         data: order,
       });
     } catch (err) {
-      return res.status(RESPONSE.FAIL.httpStatus).json({
-        code: RESPONSE.FAIL.code,
-        message: RESPONSE.FAIL.message,
+      return res.status(RESPONSE.BAD_REQUEST.httpStatus).json({
+        code: RESPONSE.BAD_REQUEST.code,
+        message: RESPONSE.BAD_REQUEST.message,
         error: err.message,
       });
     }
@@ -36,11 +36,12 @@ export class OrdersController {
       const pageNum = Math.max(1, parseInt(page, 10) || 1);
       const limitNum = Math.max(1, parseInt(limit, 10) || 10);
       const [orders, total] = await this.ordersService.findAllPaginated(pageNum, limitNum);
-      return res.status(RESPONSE.SUCCESS.httpStatus).json({
-        code: RESPONSE.SUCCESS.code,
-        message: RESPONSE.SUCCESS.message,
+      return res.status(RESPONSE.OK.httpStatus).json({
+        code: RESPONSE.OK.code,
+        message: RESPONSE.OK.message,
         data: orders,
         meta: {
+          ...RESPONSE.OK.meta,
           page: pageNum,
           limit: limitNum,
           total,
@@ -48,9 +49,9 @@ export class OrdersController {
         },
       });
     } catch (err) {
-      return res.status(RESPONSE.FAIL.httpStatus).json({
-        code: RESPONSE.FAIL.code,
-        message: RESPONSE.FAIL.message,
+      return res.status(RESPONSE.BAD_REQUEST.httpStatus).json({
+        code: RESPONSE.BAD_REQUEST.code,
+        message: RESPONSE.BAD_REQUEST.message,
         error: err.message,
       });
     }
@@ -60,9 +61,9 @@ export class OrdersController {
   async findOne(@Param('id') id: string, @Res() res: Response) {
     try {
       const order = await this.ordersService.findOne(id);
-      return res.status(RESPONSE.SUCCESS.httpStatus).json({
-        code: RESPONSE.SUCCESS.code,
-        message: RESPONSE.SUCCESS.message,
+      return res.status(RESPONSE.OK.httpStatus).json({
+        code: RESPONSE.OK.code,
+        message: RESPONSE.OK.message,
         data: order,
       });
     } catch (err) {
