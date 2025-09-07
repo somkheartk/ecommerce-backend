@@ -1,17 +1,47 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersService } from './users/users.service';
-import { UsersController } from './users/users.controller';
-import { ProductsService } from './products/products.service';
-import { ProductsController } from './products/products.controller';
 import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
+import { JwtModule } from '@nestjs/jwt';
+import { OrdersModule } from './orders/orders.module';
+import { AuthService } from './auth/auth.service';
+import { AuthController } from './auth/auth.controller';
 
 @Module({
-  imports: [AuthModule, ProductsModule, UsersModule],
-  controllers: [AppController, UsersController, ProductsController],
-  providers: [AppService, UsersService, ProductsService],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'mongodb',
+        url: config.get<string>('MONGO_URI'),
+        database: config.get<string>('MONGO_DB'),
+        entities: [__dirname + '/../entities/*.entity.{js,ts}'],
+        synchronize: true,
+      }),
+    }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'devsecret',
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1h' },
+    }),
+    AuthModule,
+    ProductsModule,
+    UsersModule,
+    OrdersModule,
+  ],
+  controllers: [
+    AppController,
+    AuthController,
+  ],
+  providers: [
+    AppService,
+    AuthService,
+  ],
+  exports: [AuthService,JwtModule], // เผื่อ module อื่นต้องใช้ sign/verify
 })
 export class AppModule {}
