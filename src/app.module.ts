@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -11,17 +11,19 @@ import { OrdersModule } from './orders/orders.module';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
 
-console.log('MONGO_URI:', process.env.MONGO_URI);
-console.log('MONGO_DB:', process.env.MONGO_DB);
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot({
-      type: 'mongodb',
-      url: process.env.MONGO_URI,
-      database: process.env.MONGO_DB,
-      entities: [__dirname + '/../entities/*.entity.{js,ts}'],
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'mongodb',
+        url: config.get<string>('MONGO_URI'),
+        database: config.get<string>('MONGO_DB'),
+        entities: [__dirname + '/../entities/*.entity.{js,ts}'],
+        synchronize: true,
+      }),
     }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'devsecret',
