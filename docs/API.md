@@ -25,7 +25,7 @@ All API responses follow a consistent format:
 ### Success Response
 ```json
 {
-  "code": "0000",
+  "code": 0,
   "message": "Success",
   "data": { ... }
 }
@@ -34,7 +34,7 @@ All API responses follow a consistent format:
 ### Error Response
 ```json
 {
-  "code": "1001",
+  "code": 1001,
   "message": "Invalid credentials",
   "error": "Error details..."
 }
@@ -44,13 +44,17 @@ All API responses follow a consistent format:
 
 | Code | HTTP Status | Description |
 |------|-------------|-------------|
-| 0000 | 200 | Success |
-| 0001 | 201 | Created |
-| 0002 | 200 | Updated |
-| 0003 | 200 | Deleted |
-| 1000 | 400 | Bad Request/Validation Error |
+| 0 | 200 | Success |
+| 1 | 400 | Fail (Bad Request/Validation Error) |
 | 1001 | 401 | Invalid Credentials |
-| 1002 | 404 | Order Not Found |
+| 1002 | 404 | User Not Found |
+| 1003 | 404 | Product Not Found |
+| 1004 | 404 | Order Not Found |
+| 1005 | 401 | Unauthorized |
+| 1006 | 403 | Forbidden |
+| 2001 | 201 | Created Successfully |
+| 2002 | 200 | Updated Successfully |
+| 2003 | 200 | Deleted Successfully |
 
 ---
 
@@ -71,7 +75,7 @@ Authenticate a user and receive a JWT token.
 **Success Response (200):**
 ```json
 {
-  "code": "0000",
+  "code": 0,
   "message": "Success",
   "data": {
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -369,7 +373,7 @@ Create a new order.
 **Success Response (201):**
 ```json
 {
-  "code": "0001",
+  "code": 2001,
   "message": "Created",
   "data": {
     "_id": "507f1f77bcf86cd799439014",
@@ -388,7 +392,7 @@ Create a new order.
 **Error Response (400):**
 ```json
 {
-  "code": "1000",
+  "code": 1,
   "message": "Fail",
   "error": "Invalid order data"
 }
@@ -410,7 +414,7 @@ GET /orders?page=2&limit=5
 **Success Response (200):**
 ```json
 {
-  "code": "0000",
+  "code": 0,
   "message": "Success",
   "data": [
     {
@@ -442,7 +446,7 @@ Get a specific order.
 **Success Response (200):**
 ```json
 {
-  "code": "0000",
+  "code": 0,
   "message": "Success",
   "data": {
     "_id": "507f1f77bcf86cd799439014",
@@ -458,7 +462,7 @@ Get a specific order.
 **Error Response (404):**
 ```json
 {
-  "code": "1002",
+  "code": 1004,
   "message": "Order not found",
   "error": "Order with given ID does not exist"
 }
@@ -487,7 +491,7 @@ Update an order.
 **Success Response (200):**
 ```json
 {
-  "code": "0002",
+  "code": 2002,
   "message": "Updated",
   "data": {
     "_id": "507f1f77bcf86cd799439014",
@@ -503,7 +507,7 @@ Update an order.
 **Error Response (404):**
 ```json
 {
-  "code": "1002",
+  "code": 1004,
   "message": "Order not found",
   "error": "Order with given ID does not exist"
 }
@@ -519,7 +523,7 @@ Delete an order.
 **Success Response (200):**
 ```json
 {
-  "code": "0003",
+  "code": 2003,
   "message": "Deleted"
 }
 ```
@@ -527,7 +531,7 @@ Delete an order.
 **Error Response (404):**
 ```json
 {
-  "code": "1002",
+  "code": 1004,
   "message": "Order not found",
   "error": "Order with given ID does not exist"
 }
@@ -542,7 +546,7 @@ The API uses consistent error responses across all endpoints:
 ### Validation Errors (400)
 ```json
 {
-  "code": "1000",
+  "code": 1,
   "message": "Validation failed",
   "error": "email must be a valid email address"
 }
@@ -551,7 +555,7 @@ The API uses consistent error responses across all endpoints:
 ### Authentication Errors (401)
 ```json
 {
-  "code": "1001",
+  "code": 1001,
   "message": "Invalid credentials",
   "error": "Invalid email or password"
 }
@@ -560,7 +564,7 @@ The API uses consistent error responses across all endpoints:
 ### Authorization Errors (403)
 ```json
 {
-  "code": "1000",
+  "code": 1006,
   "message": "Forbidden",
   "error": "Insufficient permissions"
 }
@@ -569,7 +573,7 @@ The API uses consistent error responses across all endpoints:
 ### Not Found Errors (404)
 ```json
 {
-  "code": "1002",
+  "code": 1004,
   "message": "Not found",
   "error": "Resource does not exist"
 }
@@ -591,7 +595,7 @@ Endpoints that support pagination return data in the following format:
 
 ```json
 {
-  "code": "0000",
+  "code": 0,
   "message": "Success",
   "data": [...],
   "meta": {

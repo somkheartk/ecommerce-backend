@@ -126,7 +126,7 @@ Content-Type: application/json
 **Response:**
 ```json
 {
-  "code": "0000",
+  "code": 0,
   "message": "Success",
   "data": {
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -253,7 +253,7 @@ GET /orders?page=1&limit=10
 **Response:**
 ```json
 {
-  "code": "0000",
+  "code": 0,
   "message": "Success",
   "data": [...],
   "meta": {
@@ -289,13 +289,17 @@ DELETE /orders/:id
 
 | Code | HTTP Status | Description |
 |------|-------------|-------------|
-| 0000 | 200 | Success |
-| 0001 | 201 | Created |
-| 0002 | 200 | Updated |
-| 0003 | 200 | Deleted |
-| 1000 | 400 | Bad Request |
+| 0 | 200 | Success |
+| 1 | 400 | Fail (Bad Request/Validation Error) |
 | 1001 | 401 | Invalid Credentials |
-| 1002 | 404 | Order Not Found |
+| 1002 | 404 | User Not Found |
+| 1003 | 404 | Product Not Found |
+| 1004 | 404 | Order Not Found |
+| 1005 | 401 | Unauthorized |
+| 1006 | 403 | Forbidden |
+| 2001 | 201 | Created Successfully |
+| 2002 | 200 | Updated Successfully |
+| 2003 | 200 | Deleted Successfully |
 
 ## Project Structure
 
